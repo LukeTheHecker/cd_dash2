@@ -1,0 +1,5 @@
+/webapp/__pycache__/
+/webapp/components/__pycache__/
+/webapp.vscode/
+
+*.ipynb
