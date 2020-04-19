@@ -42,8 +42,7 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/convdip':
-        return layout_convdip_page
+    return layout_convdip_page
 
 # # # # # # # # #
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
