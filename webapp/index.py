@@ -62,4 +62,4 @@ for js in external_js:
     app.scripts.append_script({"external_url": js})
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

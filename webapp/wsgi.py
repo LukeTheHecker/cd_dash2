@@ -1,3 +1,3 @@
-#from webapp.app import app as application
-from app import app
-application = app.server
+#  from webapp.app import app as application
+from index import app as application
+#  application = app.server
