@@ -8,7 +8,7 @@ ADD ./webapp/requirements.txt /tmp/requirements.txt
 # Install dependencies
 RUN pip install --upgrade pip
 RUN pip install numpy
-RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-win_amd64.whl
+RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp36-cp36m-win_amd64.whl
 RUN pip install -r /tmp/requirements.txt
 
 # Add our code
