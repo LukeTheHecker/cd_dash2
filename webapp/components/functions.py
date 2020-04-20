@@ -1,4 +1,5 @@
 import tflite_runtime.interpreter as tflite
+# import tflite
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle as pkl
@@ -133,7 +134,7 @@ def make_fig_objects(y, x_img, tris, pos):
 
 def load_model(pth):
     ''' Load optimized tensorflow lite model using only the tf interpreter instead of the whole 500mb framework''' 
-    model = tflite.Interpreter(model_path= pth + '\\tf_lite_model_optimized.tflite')
+    model = tflite.Interpreter(model_path= pth + '/tf_lite_model_optimized.tflite')
     model.allocate_tensors()
 
     return model
@@ -171,8 +172,11 @@ def predict_source(x, leadfield, model):
 
 def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
     ''' Calculate some inverse solutions as implemented in MNE Python '''
+
     source = np.zeros((5124, ))
     n_tr = 100
+    base_interval = (0, 50)
+    sig_interval = (50, 75)
     n_elec = len(x)
     # CAR
     x -= np.mean(x)
@@ -193,18 +197,18 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
     # Create empty epochs structure
     
     info = mne.create_info(evoked.ch_names, 1000, ch_types='eeg')
-    data = np.random.randn(n_tr, n_elec, 400) * relnoise_st * rms
+    data = np.random.randn(n_tr, n_elec, sig_interval[1]) * relnoise_st * rms
     # CAR noise section
     for i in range(n_tr):
-        for j in range(0, 200):
+        for j in range(base_interval[0], base_interval[1]):
             data[i, :, j] -= np.mean(data[i, :, j])
     # noise + signal section
     for i in range(n_tr):
-        for j in range(200, 400):
+        for j in range(sig_interval[0], sig_interval[1]):
             data[i, :, j] += x
             data[i, :, j] -= np.mean(data[i, :, j])    
     
-    epochs = mne.EpochsArray(data, info, events=None, tmin=-0.200, event_id=None, reject=None, flat=None, reject_tmin=None, reject_tmax=None, baseline=None, proj=True, on_missing='error', metadata=None, selection=None, verbose=None)
+    epochs = mne.EpochsArray(data, info, events=None, tmin=0.0, event_id=None, reject=None, flat=None, reject_tmin=None, reject_tmax=None, baseline=None, proj=True, on_missing='error', metadata=None, selection=None, verbose=None)
 
     epochs.set_eeg_reference(ref_channels='average')
     # montage = mne.channels.read_montage(kind='standard_1020', ch_names=epochs.ch_names,
@@ -213,18 +217,18 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
 
     epochs.set_montage('standard_1020')
     
-    epochs.apply_baseline(baseline=(-0.200, 0))
+    epochs.apply_baseline(baseline=(base_interval[0] / 1000, base_interval[1] / 1000))
 
     # breakpoint()
-    noise_cov = mne.compute_covariance(epochs, tmin=-0.200, tmax=0.0,
-                            method='auto')
+    noise_cov = mne.compute_covariance(epochs, tmin=base_interval[0] / 1000, tmax=base_interval[1] / 1000,
+                            method='empirical')
 
-    data_cov = mne.compute_covariance(epochs, tmin=0.05, tmax=0.199,
-                            method='auto')
+    data_cov = mne.compute_covariance(epochs, tmin=sig_interval[0] / 1000, tmax=(sig_interval[1] - 1) / 1000,
+                            method='empirical')
     
     evoked = epochs.average()
 
-    for i in range(400):
+    for i in range(sig_interval[1]):
         evoked.data[:, i] -= np.mean(evoked.data[:, i])
     
     # evoked_no_ref, _ = mne.set_eeg_reference(evoked, [])
@@ -236,7 +240,7 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
         filters = mne.beamformer.make_lcmv(evoked.info, fwd, data_cov, reg=0.05,
                     noise_cov=noise_cov, weight_norm='nai')
         stc = mne.beamformer.apply_lcmv(evoked, filters)
-        source = np.mean(stc.data[:, 200:], axis=1)
+        source = stc.data[:, -1]
 
     elif method == 'mxne':
         # raise NameError('No name error, but mxne is not properly implemented yet :)')

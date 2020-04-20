@@ -8,7 +8,14 @@ from app import server
 from app import app
 from layouts import layout_convdip_page
 import callbacks
+import os
 
+# Live Server:
+# port = int(os.environ.get("PORT", 8050))
+# host = "0.0.0.0"
+# Development Server:
+port = int(os.environ.get("PORT", 8050))
+host = "127.0.0.1"
 
 # see https://dash.plot.ly/external-resources to alter header, footer and favicon
 app.index_string = ''' 
@@ -61,5 +68,8 @@ external_js = ["https://code.jquery.com/jquery-3.2.1.min.js",
 for js in external_js:
     app.scripts.append_script({"external_url": js})
 
-if __name__ == '__main__':
-    app.run_server(debug=False)
+if __name__ == "__main__":
+    app.run_server(debug=False,
+                   host=host,
+                   port=port)
+print('port')

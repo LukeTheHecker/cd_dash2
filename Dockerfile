@@ -15,5 +15,5 @@ RUN pip install -r /tmp/requirements.txt
 ADD ./webapp /opt/webapp/
 WORKDIR /opt/webapp
 
-			
-CMD gunicorn --bind 0.0.0.0:$PORT wsgi 
+CMD ["python", "./index.py"]			
+# CMD gunicorn --bind 0.0.0.0:$PORT wsgi 

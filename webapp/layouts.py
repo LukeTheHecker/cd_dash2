@@ -21,27 +21,27 @@ from components.functions import simulate_source, predict_source, make_fig_objec
 
 print('Loading Some Variables')
 # Load Global variables
-pth_modeling = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'assets\\modeling'))
+pth_modeling = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'assets/modeling'))
 # Load Triangles through some inverse operator created previously
-with open(pth_modeling + '\\tris.pkl', 'rb') as f:
+with open(pth_modeling + '/tris.pkl', 'rb') as f:
     tris = pkl.load(f)
 # Load Forward Model for other inverse solutions:
-fwd = mne.read_forward_solution(pth_modeling + '\\fsaverage-fwd.fif')
+fwd = mne.read_forward_solution(pth_modeling + '/fsaverage-fwd.fif')
 # Load generic Epochs structure for other inverse solutions:
 # epochs = mne.read_epochs(pth_modeling + '\\epochs-epo.fif')
-evokeds = mne.Evoked(pth_modeling + '\\evoked-ave.fif')
+evokeds = mne.Evoked(pth_modeling + '/evoked-ave.fif')
 ## Leadfield
-with open(pth_modeling +'\\leadfield.pkl', 'rb') as f:
+with open(pth_modeling +'/leadfield.pkl', 'rb') as f:
     leadfield = pkl.load(f)[0]
 ## Positions
-with open(pth_modeling +'\\pos.pkl', 'rb') as f:
+with open(pth_modeling +'/pos.pkl', 'rb') as f:
     pos = pkl.load(f)[0]
 
 print('Preloading Models')
-model_paper = load_model(pth_modeling + '\\model_paper\\')
-model_flex = load_model(pth_modeling + '\\model_flex\\')
-model_lowsnr = load_model(pth_modeling + '\\model_lowsnr\\')
-model_gaussian = load_model(pth_modeling + '\\model_gaussian\\')
+model_paper = load_model(pth_modeling + '/model_paper/')
+model_flex = load_model(pth_modeling + '/model_flex/')
+model_lowsnr = load_model(pth_modeling + '/model_lowsnr/')
+model_gaussian = load_model(pth_modeling + '/model_gaussian/')
 
 
 
@@ -278,9 +278,12 @@ def simulate_sample(*params):
     start = time.time()
     y, x_img, db_choice = simulate_source(snr, n_sources, size, 1, leadfield, pos, source_shape=source_shape)
     end_1 = time.time()
+    print(f'Simulation: {end_1-start}')
+    print(f'Simulation: {end_1-start}')
+    print(f'Simulation: {end_1-start}')
+    print(f'Simulation: {end_1-start}')
+
     fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
-    end_2 = time.time()
-    print(f'Simulation: {end_1-start}, simulation+plotting: {end_2-start}')
 
     spinner_output = 'Simulation is Ready'
     return spinner_output, fig_x, fig_y, y, db_choice
@@ -344,7 +347,7 @@ def predict_sample(*params):
 
     data = inputs[1]['data'][0]['z']
     data = np.asarray(data)
-
+    start = time.time()
     if inputs[2] == 'paper':
         model = model_paper
         y, x_img = predict_source(data, leadfield, model)
@@ -360,7 +363,10 @@ def predict_sample(*params):
     elif inputs[2] == 'eLORETA' or inputs[2] == 'lcmv' or inputs[2] == 'MNE' or inputs[2] == 'dSPM' or inputs[2] == 'mxne':
         x = np.sum(y * leadfield, axis=1)
         y, x_img = inverse_solution(x, db, evokeds, fwd, leadfield, inputs[2])
-
+    end = time.time()
+    print(f'INVERSE SOLUTION TOOK {end-start} s')
+    print(f'INVERSE SOLUTION TOOK {end-start} s')
+    print(f'INVERSE SOLUTION TOOK {end-start} s')
     
     fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
     fig_y
