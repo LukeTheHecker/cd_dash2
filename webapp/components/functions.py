@@ -33,19 +33,6 @@ def simulate_source(snr, n_sources, size, n, leadfield, pos, source_shape='flat'
     if type(size) == str:
         size = str2num(size)
 
-    print(f'snr={snr}, n_sources={n_sources}, size={size}, n={n}')
-    print(f'snr={type(snr)}, n_sources={type(n_sources)}, size={type(size)}, n={type(n)}')
-
-    # Load basic Files
-    # pth = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'assets\\modeling'))
-    # ## Leadfield
-    # with open(pth+'\\leadfield.pkl', 'rb') as f:
-    #     leadfield = pkl.load(f)[0]
-    # ## Positions
-    # with open(pth+'\\pos.pkl', 'rb') as f:
-    #     pos = pkl.load(f)[0]
-    
-
     # Generate a source configuration based on settings
     y = np.zeros((n, leadfield.shape[1]))
     x_img = np.zeros((n, 7, 11))
@@ -91,7 +78,10 @@ def simulate_source(snr, n_sources, size, n, leadfield, pos, source_shape='flat'
     x_noise = source_to_ximg(y, leadfield, n, db_choice)
 
     print('test')
-    x_img = np.stack(Parallel(n_jobs = -1, backend = 'loky')(delayed(vec_to_sevelev_newlayout)(i) for i in x_noise))
+    if n > 1:
+        x_img = np.stack(Parallel(n_jobs = -1, backend = 'loky')(delayed(vec_to_sevelev_newlayout)(i) for i in x_noise))
+    else:
+        x_img = vec_to_sevelev_newlayout(x_noise)
 
     # x_img = np.stack([vec_to_sevelev_newlayout(i) for i in x_noise], axis=0)
         
@@ -116,7 +106,6 @@ def source_to_ximg(y, leadfield, n, db_choice):
         rms = np.sqrt(ss/sc)
         noise = np.random.randn(len(x)) * relnoise * rms
         x_noise[s,] = x + noise
-
         # CAR
         x_noise[s,] = x_noise[s,] - (np.sum(x_noise[s,]) / len(x_noise[s,]))
     return x_noise
@@ -385,16 +374,6 @@ def addNoise(x, db):
 
 def brain_plotly(y, tris, pos):
     ''' takes triangulated mesh, list of coordinates and a vector of brain activity and plots a plotly triangulated surface '''
-    # pth = "C:\\Users\\Lukas\\Documents\\cd_dash\\assets\\modeling\\"
-    ## Positions
-    # with open(pth+'pos.pkl', 'rb') as f:
-    #     pos = pkl.load(f)[0]
-
-    ## Inverse operator, needed to get the triangle-information in the plotting
-    # fname_inv = pth + 'inverse-inv.fif'
-    # inverse_operator = mne.minimum_norm.read_inverse_operator(fname_inv)
-    # tris = inverse_operator['src'][0]['use_tris']
-    
 
     # Concatenate tris so that it covers the whole brain
     tmp = tris + int(pos.shape[0]/2)

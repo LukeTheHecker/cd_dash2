@@ -3,7 +3,9 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 import dash_table
 from dash.dependencies import Input, Output, State
-from plotly.tools import mpl_to_plotly
+import plotly.graph_objects as go
+import plotly.express as px
+
 import dash_core_components as dcc
 
 import numpy as np
@@ -17,7 +19,7 @@ import pickle as pkl
 import time
 
 from components import Header
-from components.functions import simulate_source, predict_source, make_fig_objects, load_model, inverse_solution
+from components.functions import simulate_source, predict_source, make_fig_objects, load_model, inverse_solution, brain_plotly
 
 print('Loading Some Variables')
 # Load Global variables
@@ -43,7 +45,10 @@ model_flex = load_model(pth_modeling + '/model_flex/')
 model_lowsnr = load_model(pth_modeling + '/model_lowsnr/')
 model_gaussian = load_model(pth_modeling + '/model_gaussian/')
 
-
+# Get Brain Plot structure
+data = np.arange(0, 5124)
+fig, _ = brain_plotly(data, tris, pos)
+fig_brain = go.Figure(data=[go.Mesh3d(x=fig.data[0]['x'], y=fig.data[0]['y'], z=fig.data[0]['z'], i=fig.data[0]['i'], j=fig.data[0]['j'], k=fig.data[0]['k'], intensity=data, colorscale='Portland')])#, colorscale='Rainbow', 
 
 ######################## START ConvDip Layout ########################
 layout_convdip_page =  html.Div([
@@ -283,7 +288,15 @@ def simulate_sample(*params):
     print(f'Simulation: {end_1-start}')
     print(f'Simulation: {end_1-start}')
 
-    fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
+    # fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
+
+    # Some Normalization
+    x_img /= np.max(np.abs(x_img))
+    y /= np.max(np.abs(y))
+    # Plotting
+    fig_x = px.imshow(x_img)
+    fig_y = fig_brain
+    fig_y.data[0].update(intensity=y)
 
     spinner_output = 'Simulation is Ready'
     return spinner_output, fig_x, fig_y, y, db_choice
@@ -368,7 +381,14 @@ def predict_sample(*params):
     print(f'INVERSE SOLUTION TOOK {end-start} s')
     print(f'INVERSE SOLUTION TOOK {end-start} s')
     
-    fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
-    fig_y
+    # fig_y, fig_x = make_fig_objects(y, x_img, tris, pos)
+    # Some Normalization
+    x_img /= np.max(np.abs(x_img))
+    y /= np.max(np.abs(y))
+    # Plotting
+    fig_x = px.imshow(x_img)
+    fig_y = fig_brain
+    fig_y.data[0].update(intensity=y)
+
     spinner_output = 'Prediction ready!'
     return spinner_output, fig_x, fig_y
