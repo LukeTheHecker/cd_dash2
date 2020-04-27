@@ -6,24 +6,25 @@ from dash.dependencies import Input, Output
 # see https://community.plot.ly/t/nolayoutexception-on-deployment-of-multi-page-dash-app-example-code/12463/2?u=dcomfort
 from app import server
 from app import app
-from layouts import layout_convdip_page
+from layouts import layout_convdip_page, main_page, page_not_found
 import callbacks
 import os
 
 # Live Server:
 # port = int(os.environ.get("PORT", 8050))
 # host = "0.0.0.0"
+# debug = False
 # Development Server:
 port = int(os.environ.get("PORT", 8050))
 host = "127.0.0.1"
-
+debug = True
 # see https://dash.plot.ly/external-resources to alter header, footer and favicon
 app.index_string = ''' 
 <!DOCTYPE html>
 <html>
     <head>
         {%metas%}
-        <title>CC ConvDip</title>
+        <title>ConvDip</title>
         {%favicon%}
         {%css%}
     </head>
@@ -49,7 +50,16 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    return layout_convdip_page
+    print(f'pathname is {pathname.lower()}')
+
+    if pathname.lower() == '/convdip' or pathname.lower() =='/convdip/':
+        print('going to convdip')
+        return layout_convdip_page
+    elif pathname.lower() == '/' or pathname.lower() == '':
+        return main_page
+    else:
+        return page_not_found
+
 
 # # # # # # # # #
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
@@ -69,7 +79,7 @@ for js in external_js:
     app.scripts.append_script({"external_url": js})
 
 if __name__ == "__main__":
-    app.run_server(debug=False,
+    app.run_server(debug=debug,
                    host=host,
                    port=port)
 print('port')
