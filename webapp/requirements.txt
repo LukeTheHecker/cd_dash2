@@ -79,6 +79,7 @@ six
 sklearn==0.0
 terminado==0.8.3
 testpath==0.4.4
+tflite-runtime==2.1.0.post1
 tornado==6.0.4
 traitlets==4.3.3
 twine==3.1.1

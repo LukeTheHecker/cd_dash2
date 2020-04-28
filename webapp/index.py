@@ -11,13 +11,13 @@ import callbacks
 import os
 
 # Live Server:
-# port = int(os.environ.get("PORT", 8050))
-# host = "0.0.0.0"
-# debug = False
+port = int(os.environ.get("PORT", 8080))
+host = "0.0.0.0"
+debug = False
 # Development Server:
-port = int(os.environ.get("PORT", 8050))
-host = "127.0.0.1"
-debug = True
+# port = int(os.environ.get("PORT", 8080))
+# host = "127.0.0.1"
+# debug = True
 # see https://dash.plot.ly/external-resources to alter header, footer and favicon
 app.index_string = ''' 
 <!DOCTYPE html>
