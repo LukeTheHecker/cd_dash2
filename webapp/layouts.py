@@ -22,6 +22,8 @@ from components import Header
 from components.functions import simulate_source, predict_source, make_fig_objects, load_model, inverse_solution, brain_plotly
 
 
+card_color = "secondary"
+
 ######################## START ConvDip Layout ########################
 layout_convdip_page =  html.Div([
     html.Div([
@@ -29,9 +31,8 @@ layout_convdip_page =  html.Div([
         Header(),
         # Header Bar
         html.Div([
-          html.Center(html.H1(["ConvDip: A convolutional neural network for better M/EEG Source Imaging"], style={'marginTop': 15})),  #, className="gs-header gs-text-header padded",style={'marginTop': 15}));
-          html.Br(),
-          html.Center(html.H4(["Hecker, Lukas; Rupprecht, Rebekka; Tebartz van Elst, Ludger; Kornmeier, Juergen; 04/2020"], style={'marginTop': 15})),
+          html.Center(html.H1(["ConvDip App"], style={'marginTop': 15})),  #, className="gs-header gs-text-header padded",style={'marginTop': 15}));
+          html.Br()
           ]),
         # Hidden divs: 
         # stores the simulated source vector y
@@ -42,19 +43,19 @@ layout_convdip_page =  html.Div([
         # Abstract
         dbc.Card(
             dbc.CardBody([
-                html.H6('ConvDip is a convolutional neural network that finds solutions for the inverse problem of the EEG. The inverse problem describes the search for the neural generators of the EEG signal. Since the inverse problem is highly underdetermined, there is more than one plausible solution. Several inverse solutions were developed in the past years, each of which with their own advantages and disadvantages.', className="card-text"),
-                html.H6(['Here you find a playground to test and compare the algorithm with some conventional methods below']),
-                html.H6(['See the paper for more detailed descriptions of the method: ', html.A("Link to BioRxiv", href='https://www.biorxiv.org/content/10.1101/2020.04.09.033506v1', target="_blank")]),
+                html.P('ConvDip is a convolutional neural network that finds solutions for the inverse problem of the EEG. The inverse problem describes the search for the neural generators of the EEG signal. Since the inverse problem is highly underdetermined, there is more than one plausible solution. Several inverse solutions were developed in the past years, each of which with their own advantages and disadvantages.', className="card-text"),
+                html.P(['Here you find a playground to test and compare the algorithm with some conventional methods below.'], className="card-text"),
+                html.P(['See the paper for more detailed descriptions of the method: ', html.A("Link to BioRxiv", href='https://www.biorxiv.org/content/10.1101/2020.04.09.033506v1', target="_blank")], className="card-text"),
                 html.Br(),
                 html.H4('Get Started:', className="card-text"),
-                html.H5('1.) Simulate a sample by clicking the button <Simulate Sample>'),
-                html.H5('2.) Check the resulting brain plot in the middle and the resulting EEG measurement on the right.'),
-                html.H5('3.) Predict the source by clicking <Predict Source> and compare the resulting brain plot with the one you simulated before. How similar are they?'),
-                html.H5('4.) You can play around with various combinations of simulation parameters and the provided inverse solutions. Have fun !')
+                html.P('1.) Simulate a sample by clicking the button <Simulate Sample>', className="card-text"),
+                html.P('2.) Check the resulting brain plot in the middle and the resulting EEG measurement on the right.', className="card-text"),
+                html.P('3.) Predict the source by clicking <Predict Source> and compare the resulting brain plot with the one you simulated before. How similar are they?', className="card-text"),
+                html.P('4.) You can play around with various combinations of simulation parameters and the provided inverse solutions. Have fun !', className="card-text")
                 
             ]
-            ), style={'margin': '20px'}
-        )
+            ), color=card_color, style={'margin': '20px'},
+        className="card text-white bg-secondary mb-3")
         ,
         dbc.Row([
             # Simulation Panel
@@ -107,7 +108,7 @@ layout_convdip_page =  html.Div([
                     #     children='Enter the values and press button')
                     #     ]),
                     ])
-                ], style={'margin': '20px'}), # end of settings card
+                ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"), # end of settings card
             width=3),
 
             # Simulation: Scalp Map
@@ -130,7 +131,7 @@ layout_convdip_page =  html.Div([
                     html.P("This plot depicts the cortical surface of the brain with its gyri and sulci. Colored in orange you see the simulated electric activity.", className="card-title"),
 
                         ]),
-                    ], style={'margin': '20px'}),
+                    ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"),
                     width=5),
                 
             # Simulation Canvas 2
@@ -148,7 +149,7 @@ layout_convdip_page =  html.Div([
                         html.Br(),
                         html.P("This is a low-resolution representation of the EEG (aerial view). This map is generated by projecting the simulated brain activity to the electrodes of a simulated set of EEG electrodes. This is possible through a forward model which describes the conductive and geometric properties of tissues of the head (e.g. brain, dura, skull). The task of an inverse solution is to infer the activity shown on the left (brain plot) from the scalp map shown.", className="card-title"),
                         ]),
-                    ], style={'margin': '20px'}),
+                    ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"),
                 width=4)
                 
             ]),  # end of simulation row
@@ -181,7 +182,7 @@ layout_convdip_page =  html.Div([
                     dbc.Button('Predict Source', id='predict_button', color="primary"),
                     dbc.Spinner(html.Div(id="loading-output-prediction")),
                     ])
-                ], style={'margin': '20px'}),
+                ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"),
                 width=3),
         # Prediction Figures
         dbc.Col(
@@ -202,7 +203,7 @@ layout_convdip_page =  html.Div([
                 html.Br(),
                 html.P("This plot depicts the inverse solution. In the best case this brain activity depicts exactly the simulated activity of the figure above. However, the inverse problem does not have a unique solution, wherefore we can only expect rough approximations.", className="card-title"),
                 ]),
-            ], style={'margin': '20px'}),
+            ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"),
             width=5),
 
 
@@ -222,15 +223,9 @@ layout_convdip_page =  html.Div([
                 html.P("This is a low-resolution representation of the EEG (aerial view). This map is generated by projecting the predicted brain activity (figure to the left) to the electrodes of a simulated set of EEG electrodes. This is possible through a forward that describes the conductive and geometric properties of tissues of the head(e.g. brain, dura, skull).", className="card-title"),
 
                 ]),
-            ], style={'margin': '20px'}),
+            ], style={'margin': '20px'}, className="card text-white bg-secondary mb-3"),
         width=4)
         ]), # End of Prediction Group
-        # Architecture
-        html.Div([
-            html.Center(html.H1(["ConvDip architecture"], style={'marginTop': 15})),  #, className="gs-header gs-text-header padded",style={'marginTop': 15}));
-            html.Br(),
-            html.Center(html.Img(src='/assets/architecture.png', height=500)),
-            ]),
         html.Div([], style={'margin': '20px'}),
         ], className="subpage"), 
     ], className="page")
@@ -240,11 +235,60 @@ main_page = html.Div([
     html.Div([
         Header()
         ])
-
     ])
+
+publications = html.Div([
+    html.Div([
+    Header(),
+    dbc.Row([
+    dbc.Col([
+    dbc.Card([
+        dbc.CardHeader("Publications"),
+        dbc.CardBody([
+        html.P("Hecker, L., Rupprecht, R., van Elst, L. T., & Kornmeier, J. (2020). ConvDip: A convolutional neural network for better M/EEG Source Imaging. bioRxiv, submitted."),
+        html.Br(),
+        html.P("Joos, E., Giersch, A., Hecker, L., Schipp., J., Heinrich, S.P., van Elst, L.T., Kornmeier, J. (2020) Large EEG amplitude effects are highly similar across Necker cube, smiley, and abstract stimuli, accepted at PloS one."),
+        html.Br(),
+        html.P("Kornmeier, J., Friedel, E., Hecker, L., Schmidt, S., & Wittmann, M. (2019). What happens in the brain of meditators when perception changes but not the stimulus?. PloS one, 14(10)."),
+        html.Br(),
+        html.P("Taubert, M., Stein, T., Kreutzberg, T., Stockinger, C., Hecker, L., Focke, A., ... & Pleger, B. (2016). Remote effects of non-invasive cerebellar stimulation on error processing in motor re-learning. Brain stimulation, 9(5), 692-699."),
+        ])
+        ], style={'margin': '20px'}),
+    ]),
+    dbc.Col([
+    dbc.Card([
+        dbc.CardHeader("Posters & talks"),
+        dbc.CardBody([
+        html.P("Joos, E., Giersch, A., Hecker, L., Schipp, J., van Elst, L. T., & Kornmeier, J. (2019). How ambiguity helps to understand metaperception-Similar EEG correlates of geometry and emotion processing."),
+        html.Br(),
+        html.P("Hecker, L., Joos, E., Feige, B., van Elst, L. T., & Kornmeier, J. (2019, September). Common Neural Generators of the ERP Ambiguity Effects With Different Types of Ambiguous Figures."),
+        html.Br(),
+        html.P("Joos, E., Giersch, A., Hecker, L., Schipp, J., van Elst, L. T., & Kornmeier, J. (2019, September). How Metaperception Helps to Process Ambiguity in Geometry and Emotion."),
+        html.Br(),
+        html.P("Hecker, L., Joos, E., Giersch, A., van Elst, L. T., & Kornmeier, J. (2019, April). We Cannot Ignore a Smile!-EEG Correlates of the Interaction Between Ambiguity and Attention."),
+        ])
+        ], style={'margin': '20px'})
+    ])
+    ]),
+    dbc.Row([
+    dbc.Col(
+    dbc.Card([
+        dbc.CardHeader("Grants and funding"),
+        dbc.CardBody([
+            html.P("European Campus (EUCOR) seeding money: Combining classical approaches and machine learning to identify biomarkers along the visual processing chain in psychiatric patients.(2020)"),
+            html.Br(),
+            html.P("NVIDIA Academic Seeding Program: Recived one NVIDIA Titan V GPU for exploring novel machine learning approaches for EEG data analysis.(2019)")
+            ])
+    ], style={'margin': '20px'}),
+    width=6
+    )
+    ])
+    ], className="subpage"),
+    ], className="page"), 
+
 page_not_found = html.Div([
     html.Div([
         Header(),
         html.H1('404 Page not found :(')
-    ])
-])
+    ], className="subpage")
+], className="page")

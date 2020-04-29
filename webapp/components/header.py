@@ -3,30 +3,38 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 
 def Header():
-    return html.Div([
-        dbc.Row([get_menu(), get_header(), get_logo()], justify="between")
-        # get_logo(),
-        # get_header(),
-        # html.Br([]),
-        # get_menu()
-    ], style={'margin': '20px'})
+
+
+    navbar = dbc.Navbar(
+        [
+            get_logo(),
+            get_menu(),
+            dbc.NavbarToggler(id="navbar-toggler"),
+            # dbc.Collapse(search_bar, id="navbar-collapse", navbar=True),
+        ],
+        color="dark",
+        dark=True,
+        # fixed='top',
+        sticky='top',
+    )
+
+    return navbar
 
 def get_logo():
-    logo = dbc.Col(
+    logo = html.A(
+            # Use row and col to control vertical alignment of logo / brand
+            dbc.Row(
+                [
+                    dbc.Col(html.Img(src='../assets/favicon.ico', height="30px")),
+                    dbc.Col(dbc.NavbarBrand("LH Neuroscience", className="ml-2")),
+                ],
+                align="center",
+                no_gutters=True,
+            ),
+            href="/",
+        )
 
-        html.Div([
-
-        html.Div([
-            html.Img(src='../assets/favicon.ico', height='128', width='128')
-        ], className="ten columns padded"),
-
-        # html.Div([
-        #     dcc.Link('Full View   ', href='/cc-travel-report/full-view')
-        # ], className="two columns page-view no-print")
-
-    ], className="row gs-header"),
-    width=1
-    )
+   
     return logo
 
 
@@ -54,18 +62,15 @@ def get_header():
 #     return menu
 
 def get_menu():
-    nav = dbc.Col(
-        dbc.Nav([
-        dbc.NavItem(dbc.NavLink("Main", href="/")),
+    nav = dbc.Nav([
+        dbc.NavItem(dbc.NavLink("Home", href="/")),
         dbc.NavItem(dbc.NavLink("ConvDip", href="/convdip/")),
-        dbc.NavItem(dbc.NavLink("Another link", href="/some_site/")),
+        dbc.NavItem(dbc.NavLink("Publications", href="/publications/")),
         # dbc.DropdownMenu(
         #     [dbc.DropdownMenuItem("Item 1"), dbc.DropdownMenuItem("Item 2")],
         #     label="Dropdown",
         #     nav=True,
         # ),
-        ]
-        ),
-        width=3,
-    )
+        ])
+
     return nav

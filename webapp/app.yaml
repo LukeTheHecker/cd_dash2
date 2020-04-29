@@ -3,10 +3,16 @@ entrypoint: gunicorn -b :8080 -w 1 index:app
 
 instance_class: F2
 
-manual_scaling:
-  instances: 1
+# manual_scaling:
+#   instances: 1
+
+automatic_scaling:
+  max_instances: 1
+  min_instances: 0
+  min_idle_instances: 0
+  max_concurrent_requests: 80
 
 resources:
   cpu: 1
-  memory_gb: 1
-  disk_size_gb: 2
+  memory_gb: 0.5
+  disk_size_gb: 10
