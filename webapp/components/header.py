@@ -13,7 +13,7 @@ def Header():
             # dbc.Collapse(search_bar, id="navbar-collapse", navbar=True),
         ],
         color="dark",
-        dark=True,
+        dark=False,
         # fixed='top',
         sticky='top',
     )
@@ -26,7 +26,7 @@ def get_logo():
             dbc.Row(
                 [
                     dbc.Col(html.Img(src='../assets/favicon.ico', height="30px")),
-                    dbc.Col(dbc.NavbarBrand("LH Neuroscience", className="ml-2")),
+                    dbc.Col(dbc.NavbarBrand("Lukas Hecker Neuroscience", className="ml-2")),
                 ],
                 align="center",
                 no_gutters=True,

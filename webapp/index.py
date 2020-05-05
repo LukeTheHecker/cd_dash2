@@ -50,10 +50,9 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    print(f'pathname is {pathname.lower()}')
-
+    ''' Handles the requested URLs'''
+    
     if pathname.lower() == '/convdip' or pathname.lower() =='/convdip/':
-        print('going to convdip')
         return layout_convdip_page
     elif pathname.lower() == '/' or pathname.lower() == '':
         return main_page

@@ -175,7 +175,8 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
     rms = np.sqrt(np.mean(x**2))
 
     snr_erp = np.clip(db_conv(SNR), 1e-10, None)  # convert SNR from dB to relative
-    relnoise_st = (1 * np.sqrt(n_tr)) / snr_erp    # calculate single-trial SNR based on desired ERP-SNR given the number of trials (n_tr)
+    # relnoise_st = (1 * np.sqrt(n_tr)) / snr_erp    # calculate single-trial SNR based on desired ERP-SNR given the number of trials (n_tr)
+    relnoise_st = snr_erp
     # evoked = epochs.average()
 
     print(f'rms = {rms}\nnoise = {SNR}dB\nsnr_erp = {snr_erp}\nrelnoise_st = {relnoise_st}')
@@ -223,13 +224,16 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
     # evoked_no_ref, _ = mne.set_eeg_reference(evoked, [])
     
     evoked.set_eeg_reference(ref_channels='average', projection=True)
-    lambda2 = 1. / SNR**2   # https://mne.tools/0.16/auto_tutorials/plot_mne_dspm_source_localization.html
+    lambda2 = 1. / db_conv(SNR)**2   # https://mne.tools/0.16/auto_tutorials/plot_mne_dspm_source_localization.html
     if method == 'lcmv':
         
-        filters = mne.beamformer.make_lcmv(evoked.info, fwd, data_cov, reg=0.05,
+        filters = mne.beamformer.make_lcmv(evoked.info, fwd, data_cov, reg=0.2,
                     noise_cov=noise_cov, weight_norm='nai')
         stc = mne.beamformer.apply_lcmv(evoked, filters)
-        source = stc.data[:, -1]
+        print(stc.data.shape)
+        print(stc.data.shape)
+        print(stc.data.shape)
+        source = np.mean(stc.data[:, sig_interval[0]:sig_interval[1]], axis=1)
 
     elif method == 'mxne':
         # raise NameError('No name error, but mxne is not properly implemented yet :)')
@@ -248,7 +252,7 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
             return_as_dipoles=True)
         
         stc = make_stc_from_dipoles(dipoles, fwd['src'])
-        source = stc.data[:, -1]
+        source = np.mean(stc.data[:, sig_interval[0]:sig_interval[1]], axis=1)
         # source = dipoles.data[:, -1]
 
         print(f'mxne source = {source}, dipoles={dipoles}')
@@ -260,7 +264,7 @@ def inverse_solution(x, SNR, evoked, fwd, leadfield, method):
         print(f'epochs.info: {epochs.info}')
         inv = mne.minimum_norm.make_inverse_operator(epochs.info, fwd, noise_cov, fixed=True, verbose=False)
         stc = np.abs(mne.minimum_norm.apply_inverse(evoked, inv, lambda2=lambda2, method=method, verbose=False))
-        source = stc.data[:, -1]
+        source = np.mean(stc.data[:, sig_interval[0]:sig_interval[1]], axis=1)
         # breakpoint()
 
     x = np.sum(source * leadfield, axis=1)
@@ -274,9 +278,7 @@ def db_conv(db):
 def str2num(mystr):
     if len(mystr) == 1:
         return float(mystr)
-    else:
-        arr = []
-        
+    else:        
         return ast.literal_eval(mystr)
         
 
